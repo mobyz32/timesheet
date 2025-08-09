@@ -69,7 +69,7 @@
         </div>
 
         <div style="height:12px"></div>
-        <div class="tiny muted">Employees can leave a note with any punch. Admin can review notes in reports.</div>
+        <div class="tiny muted">Employees can leave a note with any punch. Admin reviews notes in reports.</div>
       </div>
 
       <!-- RIGHT: Admin/report -->
@@ -148,19 +148,18 @@
   <script type="module">
     /***** CONFIG *****/
     const CONFIG = {
-      // Your Firebase config
       firebase: {
-        apiKey: "AIzaSyAXwW14wEzGz5IjetGeWCb0tmU_lkDJqJI",
-        authDomain: "mobyam32.firebaseapp.com",
-        projectId: "mobyam32",
-        appId: "1:453231570263:web:1e219d402146960c502212"
+        apiKey: "AIzaSyBW1A2XYO51oiwPNKRfVC4jqUGYbsCd8dI",
+        authDomain: "timesheet-591d9.firebaseapp.com",
+        projectId: "timesheet-591d9",
+        appId: "1:918638416970:web:fd02a54c8e66228edd02b3"
       },
       // Employees
       employees: [
         { id:"pa",    name:"Pa",    autoLunch:60 },
         { id:"freddy",name:"Freddy",autoLunch:0  },
-        { id:"chill", name:"Chill", autoLunch:0  },
-        { id:"indy",  name:"Indy",  autoLunch:0  },
+        { id:"chill", name:"Chill",  autoLunch:0  },
+        { id:"indy",  name:"Indy",   autoLunch:0  },
       ],
       // Admin PIN (for report/edit features)
       adminPin: "909090",
@@ -168,7 +167,7 @@
       // Auto-lunch applies only if NO break events AND shift >= this many hours:
       AUTO_LUNCH_MIN_SHIFT_HOURS: 5,
 
-      // Pay period anchor (first period start). “Cut” is the Friday inside the period.
+      // Pay period anchor (first period start). “Cut” is the Friday inside the 14-day period.
       anchorStartISO: "2025-08-16", // Aug 16, 2025 (local)
       timezone: "America/Los_Angeles",
       collection: "punches_v1" // Firestore collection name
@@ -187,6 +186,11 @@
     function startOfDayLocal(d){
       const t = new Date(d);
       t.setHours(0,0,0,0);
+      return t;
+    }
+    function endOfDayLocal(d){
+      const t = new Date(d);
+      t.setHours(23,59,59,999);
       return t;
     }
     function toLocal(date){ return new Date(date); }
@@ -297,7 +301,7 @@
 
     /***** Firebase init *****/
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, updateDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const app = initializeApp(CONFIG.firebase);
@@ -317,7 +321,7 @@
       empSelect.appendChild(opt);
     });
 
-    // Clock
+    // Clock display
     setInterval(()=>{
       const d = new Date();
       nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
@@ -335,7 +339,7 @@
         note: note || null,
         ts: serverTimestamp(),
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        geo: null, // removed
+        geo: null,
         createdBy: (auth.currentUser && auth.currentUser.uid) || "anon",
         edited: false
       };
@@ -446,7 +450,7 @@
       URL.revokeObjectURL(url);
     });
 
-    // Status clock
+    // Status clock (already above but harmless to keep updated)
     setInterval(()=>{
       const d = new Date();
       nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
@@ -457,24 +461,18 @@
     1) Firebase console:
        - Firestore: enable (Native mode).
        - Authentication: enable Anonymous sign-in.
-    2) This file already includes your project config (mobyam32).
-    3) Publish on GitHub Pages.
-    
-    Suggested Firestore security rules (simple, low-friction):
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        // Let anyone read (reports). Lock down writes to punches only.
-        match /{document=**} {
-          allow read;
-        }
-        match /punches_v1/{id} {
-          allow create: if true;       // anyone with the page can create a punch
-          allow update, delete: if false; // edits via adding corrective punches only
-        }
-      }
-    }
-    (When you want stricter control, tell me and we’ll add an admin sign-in + role checks.)
+    2) Publish this file on GitHub Pages.
+    3) Suggested Firestore security rules (simple starter):
+       rules_version = '2';
+       service cloud.firestore {
+         match /databases/{database}/documents {
+           match /{document=**} { allow read; }
+           match /punches_v1/{id} {
+             allow create: if true;
+             allow update, delete: if false;
+           }
+         }
+       }
   -->
 </body>
 </html>
