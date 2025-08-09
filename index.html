@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Punch Clock</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#121821; --muted:#99a3b3; --text:#e9f0ff; --acc:#5ee4a7; --acc2:#6ab8ff; --warn:#ffbe5b; --err:#ff6b6b;
+      --radius:16px;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b0f14,#0b0f14 60%,#0f1420);color:var(--text)}
+    .wrap{max-width:980px;margin:40px auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:420px 1fr}}
+    .card{background:linear-gradient(180deg,#131a25,#0e1420);border:1px solid #1f2940;border-radius:var(--radius);padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+    h1{font-size:24px;margin:0 0 8px;font-weight:700}
+    h2{font-size:18px;margin:0 0 12px;font-weight:700;color:#cfe2ff}
+    label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+    select,input,button,textarea{width:100%;border-radius:12px;border:1px solid #28344f;background:#0a111b;color:var(--text);padding:12px 14px;font-size:16px;outline:none}
+    textarea{min-height:72px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+    .btn{cursor:pointer;border:1px solid #2a3a5a;background:#0d1524;padding:14px 16px;border-radius:14px;font-weight:700;transition:.15s transform ease, .15s background ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.acc{background:linear-gradient(180deg,#1a3d2e,#0f291f);border-color:#1e5a42}
+    .btn.acc2{background:linear-gradient(180deg,#14304e,#0e2238);border-color:#214c7d}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#0f1a2b;border:1px solid #183056;color:#c9dbff;font-size:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .ok{color:var(--acc)} .warn{color:var(--warn)} .err{color:var(--err)}
+    table{width:100%;border-collapse:collapse;font-size:14px;background:#0a111b;border-radius:12px;overflow:hidden}
+    th,td{padding:10px 12px;border-bottom:1px solid #1b2742;text-align:left}
+    th{position:sticky;top:0;background:#0e1727;z-index:1}
+    .row-actions{display:flex;gap:6px}
+    .tiny{font-size:12px}
+    .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .right{margin-left:auto}
+    .tag{font-size:11px;background:#11233a;border:1px solid #1a3a61;color:#cfe2ff;border-radius:999px;padding:4px 8px}
+    .footer{margin-top:24px;color:#7f8aa4;font-size:12px}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;background:#0c1320;border:1px solid #1e2c47;border-radius:8px;padding:2px 6px}
+    .danger{background:linear-gradient(180deg,#3a1212,#260b0b);border-color:#6b1d1d}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="grid">
+      <!-- LEFT: Employee punch -->
+      <div class="card">
+        <h1>Punch Clock</h1>
+        <div class="flex tiny"><span class="pill" id="status">Offline</span><span class="right muted" id="now"></span></div>
+
+        <div style="height:12px"></div>
+        <div class="row">
+          <div>
+            <label>Employee</label>
+            <select id="empSelect"></select>
+          </div>
+          <div>
+            <label>Note (optional)</label>
+            <input id="note" placeholder="e.g., Forgot to clock out yesterday" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="btn acc" data-type="IN">Clock In</button>
+          <button class="btn danger" data-type="OUT">Clock Out</button>
+          <button class="btn acc2" data-type="BREAK_IN">Break Start</button>
+          <button class="btn" data-type="BREAK_OUT">Break End</button>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="tiny muted">Employees can leave a note with any punch. Admin can review notes in reports.</div>
+      </div>
+
+      <!-- RIGHT: Admin/report -->
+      <div class="card">
+        <h2>Admin & Reports</h2>
+        <div class="row">
+          <div>
+            <label>Admin PIN</label>
+            <input id="adminPin" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="enter to unlock…" />
+          </div>
+          <div class="flex" style="align-items:end">
+            <button class="btn" id="btnAdmin">Unlock Admin</button>
+            <span class="tag" id="adminState">Locked</span>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+        <div class="row">
+          <div>
+            <label>From</label>
+            <input type="date" id="fromDate" />
+          </div>
+          <div>
+            <label>To</label>
+            <input type="date" id="toDate" />
+          </div>
+        </div>
+        <div class="flex" style="margin-top:10px">
+          <button class="btn acc" id="btnPeriod">Set to current biweekly</button>
+          <button class="btn" id="btnLoad">Load & Calculate</button>
+          <button class="btn" id="btnExport">Export CSV</button>
+          <span class="right muted tiny" id="calcInfo"></span>
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="tiny muted">
+          Rules:
+          <ul>
+            <li>No rounding, no OT.</li>
+            <li>Auto-lunch (60 min) for <b>Pa</b> only if no break recorded. Min shift hours threshold = <span class="kbd" id="minShiftLabel"></span>.</li>
+            <li>Periods: biweekly anchored to Aug 16, 2025; cut every Friday.</li>
+          </ul>
+        </div>
+
+        <div style="height:12px"></div>
+        <div style="max-height:380px;overflow:auto;border-radius:12px">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Events</th>
+                <th>Shift hrs</th>
+                <th>Break hrs</th>
+                <th>Adj</th>
+                <th>Total hrs</th>
+                <th class="tiny">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+            <tfoot>
+              <tr>
+                <th colspan="6" style="text-align:right">Biweekly total</th>
+                <th id="grandTotal">0.00</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="footer">Edits are admin-only. Add corrective punches to fix mistakes (better audit trail).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase (modular SDK) -->
+  <script type="module">
+    /***** CONFIG *****/
+    const CONFIG = {
+      // Your Firebase config
+      firebase: {
+        apiKey: "AIzaSyAXwW14wEzGz5IjetGeWCb0tmU_lkDJqJI",
+        authDomain: "mobyam32.firebaseapp.com",
+        projectId: "mobyam32",
+        appId: "1:453231570263:web:1e219d402146960c502212"
+      },
+      // Employees
+      employees: [
+        { id:"pa",    name:"Pa",    autoLunch:60 },
+        { id:"freddy",name:"Freddy",autoLunch:0  },
+        { id:"chill", name:"Chill", autoLunch:0  },
+        { id:"indy",  name:"Indy",  autoLunch:0  },
+      ],
+      // Admin PIN (for report/edit features)
+      adminPin: "909090",
+
+      // Auto-lunch applies only if NO break events AND shift >= this many hours:
+      AUTO_LUNCH_MIN_SHIFT_HOURS: 5,
+
+      // Pay period anchor (first period start). “Cut” is the Friday inside the period.
+      anchorStartISO: "2025-08-16", // Aug 16, 2025 (local)
+      timezone: "America/Los_Angeles",
+      collection: "punches_v1" // Firestore collection name
+    };
+
+    /***** Helpers *****/
+    const $ = sel => document.querySelector(sel);
+    const nowEl = $('#now'), statusEl = $('#status'), minShiftLabel = $('#minShiftLabel');
+    minShiftLabel.textContent = CONFIG.AUTO_LUNCH_MIN_SHIFT_HOURS.toFixed(1);
+
+    function fmtHM(ms){
+      const h = ms/3600000;
+      return (Math.round(h*100)/100).toFixed(2);
+    }
+    function ymd(d){ return d.toISOString().slice(0,10); }
+    function startOfDayLocal(d){
+      const t = new Date(d);
+      t.setHours(0,0,0,0);
+      return t;
+    }
+    function toLocal(date){ return new Date(date); }
+
+    // Current biweekly period (anchored)
+    function currentBiweeklyRange(){
+      const anchor = new Date(CONFIG.anchorStartISO + "T00:00:00");
+      const today = new Date();
+      const diffDays = Math.floor((startOfDayLocal(today) - startOfDayLocal(anchor)) / 86400000);
+      const periodsSince = Math.floor(diffDays / 14);
+      const periodStart = new Date(anchor.getTime() + periodsSince*14*86400000);
+      const periodEnd = new Date(periodStart.getTime() + 13*86400000); // 14 days inclusive
+      return { from: periodStart, to: periodEnd };
+    }
+
+    // Pairing logic
+    function calculateRows(raw){
+      // Group by employee + day
+      const byEmpDay = new Map(); // key: emp|YYYY-MM-DD -> {events:[], date, emp}
+      for(const r of raw){
+        const emp = r.employeeName;
+        const date = ymd(toLocal(r.ts)); // local date
+        const key = emp + "|" + date;
+        if(!byEmpDay.has(key)) byEmpDay.set(key, { emp, date, events: [] });
+        byEmpDay.get(key).events.push(r);
+      }
+      // Sort events by time
+      for(const v of byEmpDay.values()){
+        v.events.sort((a,b)=>a.ts - b.ts);
+      }
+
+      const rows = [];
+      const totals = new Map(); // emp -> hours
+
+      for(const v of byEmpDay.values()){
+        const evs = v.events;
+        // Build shifts: IN -> OUT; collect breaks inside
+        let i=0, totalShiftMs=0, totalBreakMs=0, hadBreak=false, notes=[];
+        while(i < evs.length){
+          if(evs[i].type === "IN"){
+            const inTime = evs[i].ts;
+            // consume breaks and OUT
+            let j=i+1, outTime=null;
+            while(j < evs.length){
+              const t = evs[j].type;
+              if(t === "OUT"){ outTime = evs[j].ts; j++; break; }
+              if(t === "BREAK_IN"){
+                const bi = evs[j].ts;
+                let k=j+1, bo=null;
+                if(k < evs.length && evs[k].type === "BREAK_OUT"){
+                  bo = evs[k].ts; j = k+1;
+                } else {
+                  notes.push("Unpaired BREAK_IN");
+                  j++;
+                }
+                if(bi && bo){
+                  const bms = Math.max(0, bo - bi);
+                  totalBreakMs += bms;
+                  hadBreak = true;
+                }
+                continue;
+              }
+              j++;
+            }
+            if(outTime){
+              const sms = Math.max(0, outTime - inTime);
+              totalShiftMs += sms;
+              i = j;
+            } else {
+              notes.push("Missing OUT");
+              i++; // keep scanning
+            }
+          } else {
+            if(evs[i].type === "BREAK_OUT") notes.push("Unpaired BREAK_OUT");
+            if(evs[i].note) notes.push(evs[i].note);
+            i++;
+          }
+        }
+
+        // Auto-lunch for Pa if no break recorded
+        const empRec = CONFIG.employees.find(e=>e.name===v.emp);
+        let adjMs = 0;
+        const hours = totalShiftMs/3600000;
+        if(empRec && empRec.autoLunch>0 && !hadBreak && hours >= CONFIG.AUTO_LUNCH_MIN_SHIFT_HOURS){
+          adjMs -= empRec.autoLunch*60000;
+        }
+
+        const total = Math.max(0, totalShiftMs - totalBreakMs + adjMs);
+        rows.push({
+          emp: v.emp,
+          date: v.date,
+          events: evs.map(e=>e.type).join(" → "),
+          shiftH: fmtHM(totalShiftMs),
+          breakH: fmtHM(totalBreakMs),
+          adjH: (adjMs/3600000).toFixed(2),
+          totalH: fmtHM(total),
+          raw: v
+        });
+
+        totals.set(v.emp, (totals.get(v.emp)||0) + total/3600000);
+      }
+
+      // Sort rows by emp then date
+      rows.sort((a,b)=> (a.emp.localeCompare(b.emp) || a.date.localeCompare(b.date)));
+      const grand = Array.from(totals.values()).reduce((a,b)=>a+b,0);
+      return { rows, totals, grand };
+    }
+
+    /***** Firebase init *****/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, getDocs, updateDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const app = initializeApp(CONFIG.firebase);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    signInAnonymously(auth).catch(console.error);
+    onAuthStateChanged(auth, (u)=>{
+      statusEl.textContent = u ? "Online" : "Offline";
+      statusEl.className = "pill " + (u ? "ok" : "");
+    });
+
+    // Populate employees
+    const empSelect = $('#empSelect');
+    CONFIG.employees.forEach(e=>{
+      const opt = document.createElement('option');
+      opt.value = e.id; opt.textContent = e.name;
+      empSelect.appendChild(opt);
+    });
+
+    // Clock
+    setInterval(()=>{
+      const d = new Date();
+      nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
+    }, 300);
+
+    async function punch(type){
+      const empId = empSelect.value;
+      const emp = CONFIG.employees.find(e=>e.id===empId);
+      if(!emp){ alert("Please select an employee."); return; }
+      const note = $('#note').value.trim();
+      const payload = {
+        employeeId: emp.id,
+        employeeName: emp.name,
+        type,
+        note: note || null,
+        ts: serverTimestamp(),
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        geo: null, // removed
+        createdBy: (auth.currentUser && auth.currentUser.uid) || "anon",
+        edited: false
+      };
+      await addDoc(collection(db, CONFIG.collection), payload);
+      $('#note').value = "";
+      alert(`${emp.name}: ${type.replace('_',' ')} recorded.`);
+    }
+
+    document.querySelectorAll('.btns .btn').forEach(b=>{
+      b.addEventListener('click', ()=> punch(b.dataset.type));
+    });
+
+    // Admin unlock
+    let adminUnlocked = false;
+    $('#btnAdmin').addEventListener('click', ()=>{
+      const pin = $('#adminPin').value.trim();
+      adminUnlocked = (pin === CONFIG.adminPin);
+      $('#adminState').textContent = adminUnlocked ? "Unlocked" : "Locked";
+      $('#adminState').className = "tag " + (adminUnlocked ? "" : "warn");
+      if(!adminUnlocked) alert("Wrong admin PIN.");
+    });
+
+    // Dates UI
+    function setPeriodToCurrent(){
+      const {from,to} = currentBiweeklyRange();
+      $('#fromDate').value = ymd(from);
+      $('#toDate').value = ymd(to);
+      $('#calcInfo').textContent = `Period: ${from.toLocaleDateString()} – ${to.toLocaleDateString()}`;
+    }
+    $('#btnPeriod').addEventListener('click', setPeriodToCurrent);
+    setPeriodToCurrent();
+
+    // Load & calculate
+    $('#btnLoad').addEventListener('click', async ()=>{
+      if(!adminUnlocked){ alert("Unlock admin first."); return; }
+      const from = new Date($('#fromDate').value + "T00:00:00");
+      const to = new Date($('#toDate').value + "T23:59:59");
+      const coll = collection(db, CONFIG.collection);
+      const q = query(coll, orderBy("ts","asc"));
+      const snap = await getDocs(q);
+      const all = [];
+      snap.forEach(d=>{
+        const v = d.data();
+        const t = v.ts instanceof Timestamp ? v.ts.toDate() : (v.ts ? new Date(v.ts) : null);
+        if(!t) return;
+        if(t >= from && t <= to){
+          all.push({ id:d.id, ...v, ts: t });
+        }
+      });
+      const { rows, totals, grand } = calculateRows(all);
+
+      const tbody = $('#rows'); tbody.innerHTML = "";
+      for(const r of rows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.emp}</td>
+          <td>${r.date}</td>
+          <td class="tiny">${r.events}</td>
+          <td>${r.shiftH}</td>
+          <td>${r.breakH}</td>
+          <td>${r.adjH}</td>
+          <td><b>${r.totalH}</b></td>
+          <td>
+            <div class="row-actions">
+              <button class="btn tiny" data-act="add" data-emp="${r.emp}" data-date="${r.date}">Add</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      $('#grandTotal').textContent = grand.toFixed(2);
+
+      // Wire row actions
+      tbody.querySelectorAll('button').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          if(!adminUnlocked){ alert("Admin only"); return; }
+          const empName = btn.dataset.emp;
+          const date = btn.dataset.date;
+          const type = prompt(`Add event for ${empName} on ${date}\nType: IN, OUT, BREAK_IN, BREAK_OUT`)?.trim()?.toUpperCase();
+          if(!type) return;
+          const time = prompt(`Time (24h, e.g., 17:05) on ${date}`);
+          if(!time) return;
+          const [hh,mm] = time.split(':').map(Number);
+          if(Number.isNaN(hh)){ alert("Invalid time."); return; }
+          const ts = new Date(date + "T00:00:00"); ts.setHours(hh,mm||0,0,0);
+          const emp = CONFIG.employees.find(e=>e.name===empName);
+          await addDoc(collection(db, CONFIG.collection), {
+            employeeId: emp.id, employeeName: emp.name, type, note:null,
+            ts, tz: CONFIG.timezone, geo:null, createdBy:(auth.currentUser && auth.currentUser.uid)||"admin", edited:true
+          });
+          alert("Added. Reload to see changes.");
+        });
+      });
+    });
+
+    // Export CSV
+    $('#btnExport').addEventListener('click', ()=>{
+      if(!adminUnlocked){ alert("Unlock admin first."); return; }
+      const rows = Array.from(document.querySelectorAll('#rows tr')).map(tr=>{
+        const tds = tr.querySelectorAll('td');
+        return Array.from(tds).slice(0,7).map(td=>td.textContent);
+      });
+      const header = ["Employee","Date","Events","Shift hrs","Break hrs","Adj","Total hrs"];
+      const csv = [header, ...rows].map(r=>r.map(x=>`"${(x||"").replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:"text/csv"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = "biweekly_report.csv"; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Status clock
+    setInterval(()=>{
+      const d = new Date();
+      nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
+    }, 300);
+  </script>
+
+  <!-- Quick setup help (read, then delete):
+    1) Firebase console:
+       - Firestore: enable (Native mode).
+       - Authentication: enable Anonymous sign-in.
+    2) This file already includes your project config (mobyam32).
+    3) Publish on GitHub Pages.
+    
+    Suggested Firestore security rules (simple, low-friction):
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        // Let anyone read (reports). Lock down writes to punches only.
+        match /{document=**} {
+          allow read;
+        }
+        match /punches_v1/{id} {
+          allow create: if true;       // anyone with the page can create a punch
+          allow update, delete: if false; // edits via adding corrective punches only
+        }
+      }
+    }
+    (When you want stricter control, tell me and we’ll add an admin sign-in + role checks.)
+  -->
+</body>
+</html>
