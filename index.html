@@ -10,35 +10,35 @@
       --radius:16px;
     }
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b0f14,#0b0f14 60%,#0f1420);color:var(--text)}
-    .wrap{max-width:980px;margin:40px auto;padding:16px}
+    .wrap{max-width:1100px;margin:40px auto;padding:16px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:900px){.grid{grid-template-columns:420px 1fr}}
-    .card{background:linear-gradient(180deg,#131a25,#0e1420);border:1px solid #1f2940;border-radius:var(--radius);padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+    @media(min-width:1100px){.grid{grid-template-columns:420px 1fr}}
+    .card{background:linear-gradient(180deg,#131a25,#0e1420);border:1px solid #1f2940;border-radius:16px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
     h1{font-size:24px;margin:0 0 8px;font-weight:700}
     h2{font-size:18px;margin:0 0 12px;font-weight:700;color:#cfe2ff}
     label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
     select,input,button,textarea{width:100%;border-radius:12px;border:1px solid #28344f;background:#0a111b;color:var(--text);padding:12px 14px;font-size:16px;outline:none}
-    textarea{min-height:72px;resize:vertical}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
-    .btn{cursor:pointer;border:1px solid #2a3a5a;background:#0d1524;padding:14px 16px;border-radius:14px;font-weight:700;transition:.15s transform ease, .15s background ease}
+    .btn{cursor:pointer;border:1px solid #2a3a5a;background:#0d1524;padding:12px 14px;border-radius:12px;font-weight:700;transition:.15s transform ease}
     .btn:hover{transform:translateY(-1px)}
     .btn.acc{background:linear-gradient(180deg,#1a3d2e,#0f291f);border-color:#1e5a42}
     .btn.acc2{background:linear-gradient(180deg,#14304e,#0e2238);border-color:#214c7d}
+    .danger{background:linear-gradient(180deg,#3a1212,#260b0b);border-color:#6b1d1d}
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#0f1a2b;border:1px solid #183056;color:#c9dbff;font-size:12px}
     .muted{color:var(--muted);font-size:13px}
     .ok{color:var(--acc)} .warn{color:var(--warn)} .err{color:var(--err)}
     table{width:100%;border-collapse:collapse;font-size:14px;background:#0a111b;border-radius:12px;overflow:hidden}
-    th,td{padding:10px 12px;border-bottom:1px solid #1b2742;text-align:left}
+    th,td{padding:8px 10px;border-bottom:1px solid #1b2742;text-align:left;vertical-align:top}
     th{position:sticky;top:0;background:#0e1727;z-index:1}
-    .row-actions{display:flex;gap:6px}
     .tiny{font-size:12px}
     .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .right{margin-left:auto}
     .tag{font-size:11px;background:#11233a;border:1px solid #1a3a61;color:#cfe2ff;border-radius:999px;padding:4px 8px}
-    .footer{margin-top:24px;color:#7f8aa4;font-size:12px}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;background:#0c1320;border:1px solid #1e2c47;border-radius:8px;padding:2px 6px}
-    .danger{background:linear-gradient(180deg,#3a1212,#260b0b);border-color:#6b1d1d}
+    .footer{margin-top:12px;color:#7f8aa4;font-size:12px}
+    .section{margin-top:18px}
+    .caps{font-variant:all-small-caps;letter-spacing:.5px;color:#9fb2d9}
+    .flag{display:inline-block;margin-right:6px}
   </style>
 </head>
 <body>
@@ -68,8 +68,7 @@
           <button class="btn" data-type="BREAK_OUT">Break End</button>
         </div>
 
-        <div style="height:12px"></div>
-        <div class="tiny muted">Employees can leave a note with any punch. Admin reviews notes in reports.</div>
+        <div class="footer">Employees can leave a note with any punch. Admin reviews notes in reports.</div>
       </div>
 
       <!-- RIGHT: Admin/report -->
@@ -86,60 +85,80 @@
           </div>
         </div>
 
-        <div style="height:10px"></div>
-        <div class="row">
-          <div>
-            <label>From</label>
-            <input type="date" id="fromDate" />
+        <div class="section">
+          <div class="row">
+            <div>
+              <label>From</label>
+              <input type="date" id="fromDate" />
+            </div>
+            <div>
+              <label>To</label>
+              <input type="date" id="toDate" />
+            </div>
           </div>
-          <div>
-            <label>To</label>
-            <input type="date" id="toDate" />
+          <div class="flex" style="margin-top:10px">
+            <button class="btn acc" id="btnPeriod">Set to current biweekly</button>
+            <button class="btn" id="btnLoad">Load & Calculate</button>
+            <span class="right muted tiny" id="calcInfo"></span>
           </div>
-        </div>
-        <div class="flex" style="margin-top:10px">
-          <button class="btn acc" id="btnPeriod">Set to current biweekly</button>
-          <button class="btn" id="btnLoad">Load & Calculate</button>
-          <button class="btn" id="btnExport">Export CSV</button>
-          <span class="right muted tiny" id="calcInfo"></span>
         </div>
 
-        <div style="height:14px"></div>
-        <div class="tiny muted">
-          Rules:
-          <ul>
-            <li>No rounding, no OT.</li>
-            <li>Auto-lunch (60 min) for <b>Pa</b> only if no break recorded. Min shift hours threshold = <span class="kbd" id="minShiftLabel"></span>.</li>
-            <li>Periods: biweekly anchored to Aug 16, 2025; cut every Friday.</li>
-          </ul>
+        <div class="section">
+          <div class="flex">
+            <div class="caps">Events (detail)</div>
+            <span class="right"></span>
+            <button class="btn tiny" id="btnExportEvents">Export Events CSV</button>
+          </div>
+          <div style="max-height:280px;overflow:auto;border-radius:12px;margin-top:8px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Action</th>
+                  <th>Note</th>
+                  <th>Issues</th>
+                  <th>DocID</th>
+                </tr>
+              </thead>
+              <tbody id="eventsBody"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div style="height:12px"></div>
-        <div style="max-height:380px;overflow:auto;border-radius:12px">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Date</th>
-                <th>Events</th>
-                <th>Shift hrs</th>
-                <th>Break hrs</th>
-                <th>Adj</th>
-                <th>Total hrs</th>
-                <th class="tiny">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-            <tfoot>
-              <tr>
-                <th colspan="6" style="text-align:right">Biweekly total</th>
-                <th id="grandTotal">0.00</th>
-                <th></th>
-              </tr>
-            </tfoot>
-          </table>
+        <div class="section">
+          <div class="flex">
+            <div class="caps">Summary (daily + biweekly per employee)</div>
+            <span class="right"></span>
+            <button class="btn tiny" id="btnExportSummary">Export Summary CSV</button>
+          </div>
+          <div style="max-height:320px;overflow:auto;border-radius:12px;margin-top:8px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Date</th>
+                  <th>Shift (HH:MM)</th>
+                  <th>Break (HH:MM)</th>
+                  <th>Adjust (HH:MM)</th>
+                  <th>Total Paid (HH:MM)</th>
+                </tr>
+              </thead>
+              <tbody id="summaryBody"></tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="5" style="text-align:right">Biweekly Totals →</th>
+                  <th id="biweeklyTotalsCell">00:00</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="tiny muted footer">
+            Rules: No rounding, no OT. Pa gets -60:00 per completed shift regardless of length (break punches ignored for Pa).
+            Unpaired IN/OUT and mismatched breaks are flagged and excluded from totals.
+          </div>
         </div>
-        <div class="footer">Edits are admin-only. Add corrective punches to fix mistakes (better audit trail).</div>
       </div>
     </div>
   </div>
@@ -154,149 +173,222 @@
         projectId: "timesheet-591d9",
         appId: "1:918638416970:web:fd02a54c8e66228edd02b3"
       },
-      // Employees
       employees: [
-        { id:"pa",    name:"Pa",    autoLunch:60 },
+        { id:"pa",    name:"Pa",    autoLunch:60 }, // always -60 min per completed shift (ignore break punches)
         { id:"freddy",name:"Freddy",autoLunch:0  },
-        { id:"chill", name:"Chill",  autoLunch:0  },
-        { id:"indy",  name:"Indy",   autoLunch:0  },
+        { id:"chill", name:"Chill", autoLunch:0  },
+        { id:"indy",  name:"Indy",  autoLunch:0  },
       ],
-      // Admin PIN (for report/edit features)
       adminPin: "909090",
-
-      // Auto-lunch applies only if NO break events AND shift >= this many hours:
-      AUTO_LUNCH_MIN_SHIFT_HOURS: 5,
-
-      // Pay period anchor (first period start). “Cut” is the Friday inside the 14-day period.
-      anchorStartISO: "2025-08-16", // Aug 16, 2025 (local)
+      anchorStartISO: "2025-08-16", // biweekly anchor
       timezone: "America/Los_Angeles",
-      collection: "punches_v1" // Firestore collection name
+      collection: "punches_v1"
     };
 
     /***** Helpers *****/
     const $ = sel => document.querySelector(sel);
-    const nowEl = $('#now'), statusEl = $('#status'), minShiftLabel = $('#minShiftLabel');
-    minShiftLabel.textContent = CONFIG.AUTO_LUNCH_MIN_SHIFT_HOURS.toFixed(1);
+    const nowEl = $('#now'), statusEl = $('#status');
 
-    function fmtHM(ms){
-      const h = ms/3600000;
-      return (Math.round(h*100)/100).toFixed(2);
-    }
+    const EMP_MAP = new Map(CONFIG.employees.map(e=>[e.name, e]));
+    const isPa = (name)=> name.toLowerCase() === "pa";
+
     function ymd(d){ return d.toISOString().slice(0,10); }
-    function startOfDayLocal(d){
-      const t = new Date(d);
-      t.setHours(0,0,0,0);
-      return t;
-    }
-    function endOfDayLocal(d){
-      const t = new Date(d);
-      t.setHours(23,59,59,999);
-      return t;
-    }
+    function startOfDayLocal(d){ const t=new Date(d); t.setHours(0,0,0,0); return t; }
     function toLocal(date){ return new Date(date); }
+    function fmtHHMM(ms){
+      const neg = ms < 0; const abs = Math.abs(ms);
+      const h = Math.floor(abs/3600000);
+      const m = Math.round((abs%3600000)/60000);
+      const hh = String(h).padStart(2,'0');
+      const mm = String(m).padStart(2,'0');
+      return (neg?'-':'') + `${hh}:${mm}`;
+    }
+    function parseTimeHM(s){ const [hh,mm]=s.split(':').map(Number); return (hh*60+mm)*60000; }
 
-    // Current biweekly period (anchored)
     function currentBiweeklyRange(){
       const anchor = new Date(CONFIG.anchorStartISO + "T00:00:00");
       const today = new Date();
       const diffDays = Math.floor((startOfDayLocal(today) - startOfDayLocal(anchor)) / 86400000);
       const periodsSince = Math.floor(diffDays / 14);
       const periodStart = new Date(anchor.getTime() + periodsSince*14*86400000);
-      const periodEnd = new Date(periodStart.getTime() + 13*86400000); // 14 days inclusive
+      const periodEnd = new Date(periodStart.getTime() + 13*86400000);
       return { from: periodStart, to: periodEnd };
     }
 
-    // Pairing logic
-    function calculateRows(raw){
-      // Group by employee + day
-      const byEmpDay = new Map(); // key: emp|YYYY-MM-DD -> {events:[], date, emp}
-      for(const r of raw){
-        const emp = r.employeeName;
-        const date = ymd(toLocal(r.ts)); // local date
-        const key = emp + "|" + date;
-        if(!byEmpDay.has(key)) byEmpDay.set(key, { emp, date, events: [] });
-        byEmpDay.get(key).events.push(r);
+    // Build summaries: per-employee-per-day, create shifts by pairing IN->OUT and breaks by BREAK_IN->BREAK_OUT
+    function buildSummaries(events){
+      // group by emp->date
+      const byEmpDay = new Map(); // key: emp|date -> {emp, date, evs:[]}
+      for(const ev of events){
+        const date = ymd(toLocal(ev.ts));
+        const key = `${ev.employeeName}|${date}`;
+        if(!byEmpDay.has(key)) byEmpDay.set(key, { emp: ev.employeeName, date, evs: [] });
+        byEmpDay.get(key).evs.push(ev);
       }
-      // Sort events by time
+      // sort evs by time
       for(const v of byEmpDay.values()){
-        v.events.sort((a,b)=>a.ts - b.ts);
+        v.evs.sort((a,b)=>a.ts - b.ts);
       }
 
-      const rows = [];
-      const totals = new Map(); // emp -> hours
+      // compute per-day totals + flags
+      const dailyRows = []; // {emp, date, shiftMs, breakMs, adjMs, totalMs}
+      const issuesById = new Map(); // docId -> [flags]
+      const biweeklyByEmp = new Map(); // emp -> totalMs
 
       for(const v of byEmpDay.values()){
-        const evs = v.events;
-        // Build shifts: IN -> OUT; collect breaks inside
-        let i=0, totalShiftMs=0, totalBreakMs=0, hadBreak=false, notes=[];
+        const evs = v.evs;
+        let i=0;
+        let dayShiftMs=0, dayBreakMs=0, dayAdjMs=0;
+        let flags = [];
+
         while(i < evs.length){
           if(evs[i].type === "IN"){
-            const inTime = evs[i].ts;
-            // consume breaks and OUT
-            let j=i+1, outTime=null;
+            const inDoc = evs[i];
+            let outDoc=null;
+            let j=i+1;
+            // collect breaks inside this shift
+            let shiftBreakMs=0;
+            let localFlags = [];
+
+            // scan forward until OUT or end
+            const breakStack = []; // store unmatched BREAK_IN times
             while(j < evs.length){
               const t = evs[j].type;
-              if(t === "OUT"){ outTime = evs[j].ts; j++; break; }
-              if(t === "BREAK_IN"){
-                const bi = evs[j].ts;
-                let k=j+1, bo=null;
-                if(k < evs.length && evs[k].type === "BREAK_OUT"){
-                  bo = evs[k].ts; j = k+1;
+              if(t === "OUT"){ outDoc = evs[j]; j++; break; }
+              if(t === "BREAK_IN"){ breakStack.push(evs[j]); j++; continue; }
+              if(t === "BREAK_OUT"){
+                if(breakStack.length>0){
+                  const biDoc = breakStack.pop();
+                  // matched pair
+                  shiftBreakMs += Math.max(0, evs[j].ts - biDoc.ts);
                 } else {
-                  notes.push("Unpaired BREAK_IN");
-                  j++;
+                  // unpaired BREAK_OUT
+                  localFlags.push("Unpaired BREAK_OUT");
+                  // do not subtract anything
                 }
-                if(bi && bo){
-                  const bms = Math.max(0, bo - bi);
-                  totalBreakMs += bms;
-                  hadBreak = true;
-                }
-                continue;
+                j++; continue;
               }
               j++;
             }
-            if(outTime){
-              const sms = Math.max(0, outTime - inTime);
-              totalShiftMs += sms;
-              i = j;
-            } else {
-              notes.push("Missing OUT");
-              i++; // keep scanning
+
+            // any leftover unmatched BREAK_IN
+            if(breakStack.length>0){
+              localFlags.push("Unpaired BREAK_IN");
             }
+
+            if(outDoc){
+              const shiftMs = Math.max(0, outDoc.ts - inDoc.ts);
+
+              // For Pa: ignore recorded breaks and always subtract 60 min per completed shift
+              let adjMs = 0;
+              let breakMsApplied = shiftBreakMs;
+
+              if(isPa(v.emp)){
+                breakMsApplied = 0;      // ignore breaks she might have
+                adjMs = -60*60000;       // always -60:00
+              }
+
+              dayShiftMs += shiftMs;
+              dayBreakMs += breakMsApplied;
+              dayAdjMs += adjMs;
+            } else {
+              // Missing OUT for this IN
+              localFlags.push("Missing OUT");
+            }
+
+            // attach flags to involved docs for visibility (events table)
+            if(localFlags.length){
+              // Tag the IN doc
+              const list = issuesById.get(inDoc.id) || [];
+              issuesById.set(inDoc.id, list.concat(localFlags));
+            }
+            i = j;
           } else {
-            if(evs[i].type === "BREAK_OUT") notes.push("Unpaired BREAK_OUT");
-            if(evs[i].note) notes.push(evs[i].note);
+            // Events starting with OUT or BREAK_* without context
+            if(evs[i].type === "OUT"){
+              const list = issuesById.get(evs[i].id) || [];
+              issuesById.set(evs[i].id, list.concat(["OUT without prior IN"]));
+            }
             i++;
           }
         }
 
-        // Auto-lunch for Pa if no break recorded
-        const empRec = CONFIG.employees.find(e=>e.name===v.emp);
-        let adjMs = 0;
-        const hours = totalShiftMs/3600000;
-        if(empRec && empRec.autoLunch>0 && !hadBreak && hours >= CONFIG.AUTO_LUNCH_MIN_SHIFT_HOURS){
-          adjMs -= empRec.autoLunch*60000;
-        }
-
-        const total = Math.max(0, totalShiftMs - totalBreakMs + adjMs);
-        rows.push({
+        const totalMs = Math.max(0, dayShiftMs - dayBreakMs + dayAdjMs);
+        // only add a daily row if there was at least some valid completed shift time OR any events that day (makes table explicit)
+        dailyRows.push({
           emp: v.emp,
           date: v.date,
-          events: evs.map(e=>e.type).join(" → "),
-          shiftH: fmtHM(totalShiftMs),
-          breakH: fmtHM(totalBreakMs),
-          adjH: (adjMs/3600000).toFixed(2),
-          totalH: fmtHM(total),
-          raw: v
+          shiftMs: dayShiftMs,
+          breakMs: dayBreakMs,
+          adjMs: dayAdjMs,
+          totalMs
         });
 
-        totals.set(v.emp, (totals.get(v.emp)||0) + total/3600000);
+        biweeklyByEmp.set(v.emp, (biweeklyByEmp.get(v.emp) || 0) + totalMs);
       }
 
-      // Sort rows by emp then date
-      rows.sort((a,b)=> (a.emp.localeCompare(b.emp) || a.date.localeCompare(b.date)));
-      const grand = Array.from(totals.values()).reduce((a,b)=>a+b,0);
-      return { rows, totals, grand };
+      // Sort for display
+      dailyRows.sort((a,b)=> a.emp.localeCompare(b.emp) || a.date.localeCompare(b.date));
+      return { dailyRows, biweeklyByEmp, issuesById };
+    }
+
+    // Render helpers
+    function renderEventsTable(events, issuesById){
+      const body = $('#eventsBody'); body.innerHTML = "";
+      // sort by employee, then date/time
+      const rows = events.slice().sort((a,b)=>
+        a.employeeName.localeCompare(b.employeeName) || a.ts - b.ts
+      );
+      for(const ev of rows){
+        const d = ev.ts;
+        const dateStr = d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+        const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const issues = issuesById.get(ev.id) || [];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ev.employeeName}</td>
+          <td>${dateStr}</td>
+          <td>${timeStr}</td>
+          <td>${ev.type}</td>
+          <td>${ev.note ? ev.note : ""}</td>
+          <td>${issues.map(i=>`<span class="flag warn">${i}</span>`).join('')}</td>
+          <td class="tiny">${ev.id}</td>
+        `;
+        body.appendChild(tr);
+      }
+    }
+
+    function renderSummaryTable(dailyRows, biweeklyByEmp){
+      const body = $('#summaryBody'); body.innerHTML = "";
+      for(const r of dailyRows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.emp}</td>
+          <td>${r.date}</td>
+          <td>${fmtHHMM(r.shiftMs)}</td>
+          <td>${fmtHHMM(r.breakMs)}</td>
+          <td>${fmtHHMM(r.adjMs)}</td>
+          <td><b>${fmtHHMM(r.totalMs)}</b></td>
+        `;
+        body.appendChild(tr);
+      }
+      // Biweekly totals line (combined)
+      const totalsText = Array.from(biweeklyByEmp.entries())
+        .sort((a,b)=> a[0].localeCompare(b[0]))
+        .map(([emp,ms])=>`${emp}: ${fmtHHMM(ms)}`)
+        .join(' • ');
+      $('#biweeklyTotalsCell').textContent = totalsText || "00:00";
+    }
+
+    // CSV utils
+    function toCSV(rows){
+      return rows.map(r=>r.map(x=>`"${(x??"").toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+    }
+    function downloadCSV(name, rows){
+      const blob = new Blob([toCSV(rows)], {type:"text/csv"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+      URL.revokeObjectURL(url);
     }
 
     /***** Firebase init *****/
@@ -325,8 +417,9 @@
     setInterval(()=>{
       const d = new Date();
       nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
-    }, 300);
+    }, 500);
 
+    // Punch
     async function punch(type){
       const empId = empSelect.value;
       const emp = CONFIG.employees.find(e=>e.id===empId);
@@ -339,7 +432,6 @@
         note: note || null,
         ts: serverTimestamp(),
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        geo: null,
         createdBy: (auth.currentUser && auth.currentUser.uid) || "anon",
         edited: false
       };
@@ -347,7 +439,6 @@
       $('#note').value = "";
       alert(`${emp.name}: ${type.replace('_',' ')} recorded.`);
     }
-
     document.querySelectorAll('.btns .btn').forEach(b=>{
       b.addEventListener('click', ()=> punch(b.dataset.type));
     });
@@ -373,13 +464,16 @@
     setPeriodToCurrent();
 
     // Load & calculate
+    let cachedEvents = []; // store last loaded events for CSV
     $('#btnLoad').addEventListener('click', async ()=>{
       if(!adminUnlocked){ alert("Unlock admin first."); return; }
       const from = new Date($('#fromDate').value + "T00:00:00");
       const to = new Date($('#toDate').value + "T23:59:59");
+
       const coll = collection(db, CONFIG.collection);
-      const q = query(coll, orderBy("ts","asc"));
-      const snap = await getDocs(q);
+      const qy = query(coll, orderBy("ts","asc"));
+      const snap = await getDocs(qy);
+
       const all = [];
       snap.forEach(d=>{
         const v = d.data();
@@ -389,90 +483,69 @@
           all.push({ id:d.id, ...v, ts: t });
         }
       });
-      const { rows, totals, grand } = calculateRows(all);
 
-      const tbody = $('#rows'); tbody.innerHTML = "";
-      for(const r of rows){
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${r.emp}</td>
-          <td>${r.date}</td>
-          <td class="tiny">${r.events}</td>
-          <td>${r.shiftH}</td>
-          <td>${r.breakH}</td>
-          <td>${r.adjH}</td>
-          <td><b>${r.totalH}</b></td>
-          <td>
-            <div class="row-actions">
-              <button class="btn tiny" data-act="add" data-emp="${r.emp}" data-date="${r.date}">Add</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      // Keep for CSV export
+      cachedEvents = all.slice();
+
+      // Build summaries + flags
+      const { dailyRows, biweeklyByEmp, issuesById } = buildSummaries(all);
+
+      // Render tables
+      renderEventsTable(all, issuesById);
+      renderSummaryTable(dailyRows, biweeklyByEmp);
+    });
+
+    // Export Events CSV
+    $('#btnExportEvents').addEventListener('click', ()=>{
+      const rows = [["Employee","Date","Time","Action","Note","Issues","DocID"]];
+      const issuesMapCells = new Map(); // populated during last render? We'll recompute quickly:
+      // quick recompute of issues for export (simple; mirrors buildSummaries flags for IN/out context)
+      // For deterministic export, rebuild issues using buildSummaries but keep only map
+      // (We can safely reuse cachedEvents)
+      const { issuesById } = buildSummaries(cachedEvents);
+      const sorted = cachedEvents.slice().sort((a,b)=>
+        a.employeeName.localeCompare(b.employeeName) || a.ts - b.ts
+      );
+      for(const ev of sorted){
+        const d = ev.ts;
+        const dateStr = d.toLocaleDateString('en-CA');
+        const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const issues = issuesById.get(ev.id) || [];
+        rows.push([ev.employeeName, dateStr, timeStr, ev.type, ev.note||"", issues.join(" | "), ev.id]);
       }
-      $('#grandTotal').textContent = grand.toFixed(2);
-
-      // Wire row actions
-      tbody.querySelectorAll('button').forEach(btn=>{
-        btn.addEventListener('click', async ()=>{
-          if(!adminUnlocked){ alert("Admin only"); return; }
-          const empName = btn.dataset.emp;
-          const date = btn.dataset.date;
-          const type = prompt(`Add event for ${empName} on ${date}\nType: IN, OUT, BREAK_IN, BREAK_OUT`)?.trim()?.toUpperCase();
-          if(!type) return;
-          const time = prompt(`Time (24h, e.g., 17:05) on ${date}`);
-          if(!time) return;
-          const [hh,mm] = time.split(':').map(Number);
-          if(Number.isNaN(hh)){ alert("Invalid time."); return; }
-          const ts = new Date(date + "T00:00:00"); ts.setHours(hh,mm||0,0,0);
-          const emp = CONFIG.employees.find(e=>e.name===empName);
-          await addDoc(collection(db, CONFIG.collection), {
-            employeeId: emp.id, employeeName: emp.name, type, note:null,
-            ts, tz: CONFIG.timezone, geo:null, createdBy:(auth.currentUser && auth.currentUser.uid)||"admin", edited:true
-          });
-          alert("Added. Reload to see changes.");
-        });
-      });
+      downloadCSV("events.csv", rows);
     });
 
-    // Export CSV
-    $('#btnExport').addEventListener('click', ()=>{
-      if(!adminUnlocked){ alert("Unlock admin first."); return; }
-      const rows = Array.from(document.querySelectorAll('#rows tr')).map(tr=>{
-        const tds = tr.querySelectorAll('td');
-        return Array.from(tds).slice(0,7).map(td=>td.textContent);
-      });
-      const header = ["Employee","Date","Events","Shift hrs","Break hrs","Adj","Total hrs"];
-      const csv = [header, ...rows].map(r=>r.map(x=>`"${(x||"").replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], {type:"text/csv"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = "biweekly_report.csv"; a.click();
-      URL.revokeObjectURL(url);
+    // Export Summary CSV
+    $('#btnExportSummary').addEventListener('click', ()=>{
+      const { dailyRows, biweeklyByEmp } = buildSummaries(cachedEvents);
+      const rows = [["Employee","Date","Shift (HH:MM)","Break (HH:MM)","Adjust (HH:MM)","Total Paid (HH:MM)"]];
+      for(const r of dailyRows){
+        rows.push([r.emp, r.date, fmtHHMM(r.shiftMs), fmtHHMM(r.breakMs), fmtHHMM(r.adjMs), fmtHHMM(r.totalMs)]);
+      }
+      rows.push([]); // blank line
+      rows.push(["Employee","Biweekly Total (HH:MM)"]);
+      const totals = Array.from(biweeklyByEmp.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+      for(const [emp,ms] of totals){
+        rows.push([emp, fmtHHMM(ms)]);
+      }
+      downloadCSV("summary.csv", rows);
     });
-
-    // Status clock (already above but harmless to keep updated)
-    setInterval(()=>{
-      const d = new Date();
-      nowEl.textContent = d.toLocaleString([], { hour:'2-digit', minute:'2-digit', second:'2-digit', weekday:'short', month:'short', day:'numeric' });
-    }, 300);
   </script>
 
-  <!-- Quick setup help (read, then delete):
-    1) Firebase console:
-       - Firestore: enable (Native mode).
-       - Authentication: enable Anonymous sign-in.
-    2) Publish this file on GitHub Pages.
-    3) Suggested Firestore security rules (simple starter):
-       rules_version = '2';
-       service cloud.firestore {
-         match /databases/{database}/documents {
-           match /{document=**} { allow read; }
-           match /punches_v1/{id} {
-             allow create: if true;
-             allow update, delete: if false;
-           }
-         }
-       }
+  <!-- Setup notes:
+    - Enable Firestore (Native mode) + Anonymous Auth in Firebase.
+    - Suggested simple Firestore rules:
+      rules_version = '2';
+      service cloud.firestore {
+        match /databases/{database}/documents {
+          match /{document=**} { allow read; }
+          match /punches_v1/{id} {
+            allow create: if true;
+            allow update, delete: if false;
+          }
+        }
+      }
   -->
 </body>
 </html>
